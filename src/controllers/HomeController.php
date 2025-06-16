@@ -4,6 +4,7 @@ namespace src\controllers;
 
 use \core\Controller;
 use \src\handlers\LoginHandler;
+use \src\handlers\PostHandler;
 
 class HomeController extends Controller
 {
@@ -19,6 +20,18 @@ class HomeController extends Controller
 
     public function index()
     {
-        $this->render('home', ['nome' => 'Rodrigo']);
+        $page = intval(filter_input(INPUT_GET, 'page'));
+
+        //echo "PAGE: " . $page;
+
+        $feed = PostHandler::getHomeFeed(
+            $this->loggedUser->id,
+            $page // 1.
+        );
+
+        $this->render('home', [
+            'loggedUser' => $this->loggedUser,
+            'feed' => $feed
+        ]);
     }
 }
