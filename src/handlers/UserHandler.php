@@ -5,6 +5,7 @@ namespace src\handlers;
 use \src\models\User;
 use \src\models\UserRelation;
 //use \src\models\Post;
+use \src\handlers\PostHandeler;
 
 class UserHandler
 {
@@ -97,7 +98,7 @@ class UserHandler
                 }
 
                 // photos
-                
+                $user->photos = PostHandler::getPhotosFrom($id); //retorna fotos do usuário
             }
             return $user;
         }
