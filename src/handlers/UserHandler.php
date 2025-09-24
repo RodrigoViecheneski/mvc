@@ -18,7 +18,7 @@ class UserHandler
             if (count($data) > 0) {
                 $loggedUser = new User();
                 $loggedUser->id = $data['id'];
-                $loggedUser->email = $data['email'];
+                //$loggedUser->email = $data['email'];
                 $loggedUser->name = $data['name'];
                 $loggedUser->avatar = $data['avatar'];
 
@@ -60,6 +60,7 @@ class UserHandler
             $user = new User();
             $user->id = $data['id'];
             $user->name = $data['name'];
+            $user->email = $data['email'];
             $user->birthdate = $data['birthdate'];
             $user->city = $data['city'];
             $user->work = $data['work'];
