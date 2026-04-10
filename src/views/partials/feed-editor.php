@@ -6,8 +6,12 @@
             </div>
             <div class="feed-new-input-placeholder">O que você está pensando, <?= $user->name; ?>?</div>
             <div class="feed-new-input" contenteditable="true"></div>
+            <div class="feed-new-photo">
+                <img src="<?= $base; ?>/assets/images/photo.png" />
+                <input type="file" name="photo" class="feed-new-file" accept="image/png,image/jpg,image/jpeg" />
+            </div>
             <div class="feed-new-send">
-                <img src="<?=$base;?>/assets/images/send.png" />
+                <img src="<?= $base; ?>/assets/images/send.png" />
             </div>
             <form class="feed-new-form" method="POST" action="<?= $base; ?>/post/new">
                 <input type="hidden" name="body" />
@@ -19,6 +23,18 @@
     let feedInput = document.querySelector('.feed-new-input');
     let feedSubmit = document.querySelector('.feed-new-send');
     let feedForm = document.querySelector('.feed-new-form');
+    let feedPhoto = document.querySelector('.feed-new-photo');
+    let feedFile = document.querySelector('.feed-new-file');
+
+    feedPhoto.addEventListener('click', function() {
+        feedFile.click();
+    });
+    feedFile.addEventListener('change', function() {
+        let photo = feedFile.files[0];
+
+        let formData = new FormData();
+        formData.append('photo', photo);
+    });
 
     feedSubmit.addEventListener('click', function(obj) {
         let value = feedInput.innerText.trim(); // trim serve para não permitir que o usuário salve espaços no post

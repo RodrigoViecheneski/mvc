@@ -31,7 +31,7 @@ $router->post('/config', 'ConfigController@save');
 $router->get('/sair', 'LoginController@logout');
 
 $router->get('/ajax/like/{id}', 'AjaxController@like');
-
+$router->post('/ajax/comment', 'AjaxController@comment'); // verificar não está atualizando em tempo de execução
 
 //$router->get('/pesquisar');
 //$router->get('/perfil');

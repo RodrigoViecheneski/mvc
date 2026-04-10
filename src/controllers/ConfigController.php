@@ -109,7 +109,7 @@ class ConfigController extends Controller
         $ratio = $widthOrig / $heightOrig;
 
         $newWidth = $w;
-        $newHeight = $newWidth * $ratio;
+        $newHeight = $newWidth / $ratio;
         if ($newHeight < $h) {
             $newHeight = $h;
             $newWidth = $newHeight * $ratio;

@@ -57,14 +57,14 @@ if(document.querySelector('.like-btn')) {
                 item.classList.remove('on');
                 item.innerText = --count;
             }
-        fetch(BASE+'/ajax/like/'+id);
+        fetch(BASE+'/ajax/like/'+id); //BASE vem do footer
         });
     });
 }
 if(document.querySelector('.fic-item-field')) {
     document.querySelectorAll('.fic-item-field').forEach(item=>{
         item.addEventListener('keyup', async (e)=>{
-            if(e.keyCode == 13){
+            if(e.keyCode == 13){ //tecla 13 é a tecla enter
                 let id = item.closest('.feed-item').getAttribute('data-id');
                 let txt = item.value;
                 item.value = '';
@@ -92,7 +92,7 @@ if(document.querySelector('.fic-item-field')) {
 
                     item.closest('.feed-item')
                         .querySelector('.feed-item-comments-area')
-                        .innerHtml += html;
+                        .innerHTML += html;
                 }
             }
         });

@@ -24,8 +24,9 @@ class PostHandler
         }
     }
 
-    public static function _postListToObject($postList, $loggedUserId){
-         $posts = [];
+    public static function _postListToObject($postList, $loggedUserId)
+    {
+        $posts = [];
         foreach ($postList as $postItem) {
             $newPost = new Post();
             $newPost->id = $postItem['id'];
@@ -45,45 +46,59 @@ class PostHandler
             $newPost->user->avatar = $newUser['avatar'];
             // TODO: 4.1 preencher informações de LIKE
             $likes = PostLike::select()->where('id_post', $postItem['id'])->get();
-           
+
+
             $newPost->likeCount = count($likes);
             $newPost->liked = self::isLiked($postItem['id'], $loggedUserId);
             // TODO: 4.2 preencher informações de COMMENTS
             $newPost->comments = PostComment::select()->where('id_post', $postItem['id'])->get();
-            foreach($newPost->comments as $key => $comment){
+            foreach ($newPost->comments as $key => $comment) {
                 $newPost->comments[$key]['user'] = User::select()->where('id', $comment['id_user'])->one();
             }
             $posts[] = $newPost;
         }
         return $posts;
     }
-    public static function isLiked($id, $loggedUserId){
-         $myLike = PostLike::select()
+    public static function isLiked($id, $loggedUserId)
+    {
+        $myLike = PostLike::select()
             ->where('id_post', $id)
             ->where('id_user', $loggedUserId)
             ->get();
 
-            if(count($myLike) > 0){
-                return true;
-            }else{
-                return false;
-            }
+        if (count($myLike) > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
-    public static function deleteLike($id, $loggedUserId){
+    public static function deleteLike($id, $loggedUserId)
+    {
         PostLike::delete()
             ->where('id_post', $id)
             ->where('id_user', $loggedUserId)
-        ->execute();
+            ->execute();
     }
-    public static function addLike($id, $loggedUserId){
+    public static function addLike($id, $loggedUserId)
+    {
         PostLike::insert([
-           'id_post' => $id,
-           'id_user' => $loggedUserId,
-           'created_at' => date('Y-m-d H:i:s')
+            'id_post' => $id,
+            'id_user' => $loggedUserId,
+            'created_at' => date('Y-m-d H:i:s')
+        ])->execute();
+    }
+    public static function addComment($id, $txt, $loggedUserId)
+    {
+        PostComment::insert([
+            'id_post' => $id,
+            'id_user' => $loggedUserId,
+            'created_at' => date('Y-m-d H:i:s'),
+            'body' => $txt
         ])->execute();
     }
 
-    public static function getUserFeed($idUser, $page, $loggedUserId){
+    public static function getUserFeed($idUser, $page, $loggedUserId)
+    {
         $perPage = 2;
         $postList = Post::select()
             ->where('id_user', $idUser)
@@ -97,7 +112,7 @@ class PostHandler
         $pageCount = ceil($total / $perPage); //arredonda para a maior quantidade.
         //print_r($postList);
         // 3. transformar o resultado em objetos dos models.
-       $posts = self::_postListToObject($postList, $loggedUserId);
+        $posts = self::_postListToObject($postList, $loggedUserId);
 
         // 5. retornar o resultado.
         return [
@@ -132,7 +147,7 @@ class PostHandler
         $pageCount = ceil($total / $perPage); //arredonda para a maior quantidade.
         //print_r($postList);
         // 3. transformar o resultado em objetos dos models.
-       $posts = self::_postListToObject($postList, $idUser);
+        $posts = self::_postListToObject($postList, $idUser);
 
         // 5. retornar o resultado.
         return [
@@ -141,14 +156,15 @@ class PostHandler
             'currentPage' => $page
         ];
     }
-    public static function getPhotosFrom($idUser) {
+    public static function getPhotosFrom($idUser)
+    {
         $photosData = Post::select()
-        ->where('id_user', $idUser)
-        ->where('type', 'photo')
-        ->get();
+            ->where('id_user', $idUser)
+            ->where('type', 'photo')
+            ->get();
         $photos = [];
 
-        foreach($photosData as $photo){
+        foreach ($photosData as $photo) {
             $newPost = new Post();
             $newPost->id = $photo['id'];
             $newPost->type = $photo['type'];
