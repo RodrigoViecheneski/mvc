@@ -40,10 +40,12 @@ class PostHandler
             }
             // 4. preencher os informações adicionais no post.
             $newUser = User::select()->where('id', $postItem['id_user'])->one();
-            $newPost->user = new User();
-            $newPost->user->id = $newUser['id'];
-            $newPost->user->name = $newUser['name'];
-            $newPost->user->avatar = $newUser['avatar'];
+            if ($newUser) {
+                $newPost->user = new User();
+                $newPost->user->id = $newUser['id'];
+                $newPost->user->name = $newUser['name'];
+                $newPost->user->avatar = $newUser['avatar'];
+            }
             // TODO: 4.1 preencher informações de LIKE
             $likes = PostLike::select()->where('id_post', $postItem['id'])->get();
 
@@ -52,8 +54,13 @@ class PostHandler
             $newPost->liked = self::isLiked($postItem['id'], $loggedUserId);
             // TODO: 4.2 preencher informações de COMMENTS
             $newPost->comments = PostComment::select()->where('id_post', $postItem['id'])->get();
-            foreach ($newPost->comments as $key => $comment) {
-                $newPost->comments[$key]['user'] = User::select()->where('id', $comment['id_user'])->one();
+            if ($newPost->comments) {
+                foreach ($newPost->comments as $key => $comment) {
+                    $user = User::select()->where('id', $comment['id_user'])->one();
+                    if ($user) {
+                        $newPost->comments[$key]['user'] = $user;
+                    }
+                }
             }
             $posts[] = $newPost;
         }
@@ -174,5 +181,35 @@ class PostHandler
             $photos[] = $newPost;
         }
         return $photos;
+    }
+
+    public static function delete($id, $loggedUserId)
+    {
+        // 1. verificar se o post existe e é seu
+        $post = Post::select()
+            ->where('id', $id)
+            ->where('id_user', $loggedUserId)
+            ->get();
+
+        if (count($post) > 0) {
+            $post = $post[0];
+
+            // 2. deletar os likes e comments
+            PostLike::delete()->where('id_post', $id)->execute();
+            PostComment::delete()->where('id_post', $id)->execute();
+            // 3. se a foto for type == photo, deletar o arquivo
+            //echo "TYPE: " . $post->type;
+            //exit;
+            if ($post['type'] === 'photo') {
+                //echo "DIR: " . __DIR__;
+                //exit;
+                $img = __DIR__ . '/../../public/media/uploads/' . $post['body'];
+                if (file_exists($img)) {
+                    unlink($img);
+                }
+            }
+            // 4. deletar o post
+            Post::delete()->where('id', $id)->execute();
+        }
     }
 }
